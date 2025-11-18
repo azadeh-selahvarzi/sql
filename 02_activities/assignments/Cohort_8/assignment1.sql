@@ -89,6 +89,23 @@ of customers for them to give stickers to, sorted by last name, then first name.
 
 HINT: This query requires you to join two tables, use an aggregate function, and use the HAVING keyword. */
 
+SELECT 
+    c.customer_id,
+    c.customer_first_name,
+    c.customer_last_name,
+    SUM(cp.quantity * cp.cost_to_customer_per_qty) AS total_spent
+FROM customer AS c
+INNER JOIN customer_purchases AS cp
+    ON c.customer_id = cp.customer_id
+GROUP BY 
+    c.customer_id,
+    c.customer_first_name,
+    c.customer_last_name
+HAVING 
+    SUM(cp.quantity * cp.cost_to_customer_per_qty) > 2000
+ORDER BY 
+    c.customer_last_name,
+    c.customer_first_name;
 
 
 --Temp Table
