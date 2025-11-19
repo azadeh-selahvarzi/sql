@@ -122,10 +122,16 @@ VALUES(col1,col2,col3,col4,col5)
 
 CREATE TABLE temp.new_vendor AS
 SELECT *
-FROM vendor;
+FROM vendor
 
-INSERT INTO temp.new_vendor
-VALUES (10, 'Thomass Superfood Store', 'Fresh Focused', 'Rosenthal', 'Thomas');
+CROSS JOIN (
+    SELECT 10 AS vendor_id,
+           'Thomass Superfood Store' AS vendor_name,
+           'Fresh Focused' AS vendor_desc,
+           'Rosenthal' AS owner_last_name,
+           'Thomas' AS owner_first_name
+) AS nv;
+
 
 -- Date
 /*1. Get the customer_id, month, and year (in separate columns) of every purchase in the customer_purchases table.
