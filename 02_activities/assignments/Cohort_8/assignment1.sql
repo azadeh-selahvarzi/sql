@@ -52,7 +52,7 @@ add a column to the previous query called pepper_flag that outputs a 1 if the pr
 contains the word “pepper” (regardless of capitalization), and otherwise outputs 0. */
 
 SELECT product_id, product_name
-	,CASE WHEN product_name LIKE '%pepper%' THEN '1'
+	,CASE WHEN LOWER(product_name) LIKE '%pepper%' THEN '1'
 	ELSE '0'
 	END AS pepper_flag
 FROM product;
