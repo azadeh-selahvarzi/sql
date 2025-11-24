@@ -171,31 +171,30 @@ Think a bit about the row counts: how many distinct vendors, product names are t
 How many customers are there (y). 
 Before your final group by you should have the product of those two queries (x*y).  */
 
-SELECT
-vendor_name,
-product_name,
-SUM(qty * original_price) AS total_revenue
-FROM (
-    SELECT
-    vp.vendor_name,
-    vp.product_name,
-    vp.original_price,
-    5 AS qty
-    FROM (
-        SELECT 
+WITH vendor_products AS (
+	SELECT DISTINCT
         v.vendor_name,
         p.product_name,
         vi.original_price
-        FROM vendor_inventory AS vi
-        JOIN vendor AS v
-            ON v.vendor_id = vi.vendor_id
-        JOIN product AS p
-            ON p.product_id = vi.product_id
-    ) AS vp
-    CROSS JOIN customer AS c
-) AS x
-GROUP BY vendor_name, product_name
-ORDER BY vendor_name, product_name;
+    FROM vendor_inventory AS vi
+    JOIN vendor AS v
+        ON v.vendor_id = vi.vendor_id
+    JOIN product AS p
+        ON p.product_id = vi.product_id
+)
+SELECT
+    vp.vendor_name,
+    vp.product_name,
+    SUM(5 * vp.original_price) AS total_revenue_per_product
+FROM vendor_products AS vp
+CROSS JOIN customer AS c
+GROUP BY
+    vp.vendor_name,
+    vp.product_name
+ORDER BY
+    vp.vendor_name,
+    vp.product_name;
+
 
 
 -- INSERT
