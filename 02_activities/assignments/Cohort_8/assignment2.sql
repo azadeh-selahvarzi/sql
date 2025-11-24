@@ -98,12 +98,10 @@ Hint: you might need to use INSTR(product_name,'-') to find the hyphens. INSTR w
 SELECT 
     product_name,
     CASE 
-        WHEN INSTR(product_name, '-') > 0 THEN
-            LTRIM(RTRIM(
-                SUBSTR(
+        WHEN INSTR(product_name, '-') > 1 THEN
+            LTRIM(RTRIM(SUBSTR(
                     product_name,
-                    INSTR(product_name, '-') + 1
-			)
+                    INSTR(product_name, '-') + 1)
             ))
         ELSE NULL
     END AS description
