@@ -37,15 +37,15 @@ each new market date for each customer, or select only the unique market dates p
 HINT: One of these approaches uses ROW_NUMBER() and one uses DENSE_RANK(). */
 
 SELECT
-    customer_id,
-    market_date,
-    product_id,
-    quantity,
-    cost_to_customer_per_qty,
-    DENSE_RANK() OVER (
-        PARTITION BY customer_id
-        ORDER BY market_date
-    ) AS visit_number
+customer_id,
+market_date,
+product_id,
+quantity,
+cost_to_customer_per_qty,
+DENSE_RANK() OVER (
+     PARTITION BY customer_id
+     ORDER BY market_date
+) AS visit_number
 FROM customer_purchases
 ORDER BY customer_id, market_date;
 
@@ -55,15 +55,15 @@ then write another query that uses this one as a subquery (or temp table) and fi
 only the customer’s most recent visit. */
 
 SELECT
-    customer_id,
-    market_date,
-    product_id,
-    quantity,
-    cost_to_customer_per_qty,
-    DENSE_RANK() OVER (
-        PARTITION BY customer_id
-        ORDER BY market_date DESC  
-    ) AS visit_number
+customer_id,
+market_date,
+product_id,
+quantity,
+cost_to_customer_per_qty,
+DENSE_RANK() OVER (
+    PARTITION BY customer_id
+    ORDER BY market_date DESC  
+) AS visit_number
 FROM customer_purchases
 ORDER BY customer_id, market_date DESC;
 
@@ -72,14 +72,14 @@ customer_purchases table that indicates how many different times that customer h
 
 
 SELECT
-    customer_id,
-    product_id,
-    market_date,
-    quantity,
-    cost_to_customer_per_qty,
-    COUNT(*) OVER (
-        PARTITION BY customer_id, product_id
-    ) AS times_customer_purchased_product
+customer_id,
+product_id,
+market_date,
+quantity,
+cost_to_customer_per_qty,
+COUNT(*) OVER (
+     PARTITION BY customer_id, product_id
+ ) AS times_customer_purchased_product
 FROM customer_purchases
 ORDER BY customer_id, product_id, market_date;
 
@@ -96,14 +96,14 @@ Remove any trailing or leading whitespaces. Don't just use a case statement for 
 Hint: you might need to use INSTR(product_name,'-') to find the hyphens. INSTR will help split the column. */
 
 SELECT 
-    product_name,
-    CASE 
-        WHEN INSTR(product_name, '-') > 1 THEN
-            LTRIM(RTRIM(SUBSTR(
-                    product_name,
-                    INSTR(product_name, '-') + 1)
-            ))
-        ELSE NULL
+product_name,
+ CASE 
+  WHEN INSTR(product_name, '-') > 1 THEN
+    LTRIM(RTRIM(SUBSTR(
+     product_name,
+      INSTR(product_name, '-') + 1)
+      ))
+	ELSE NULL
     END AS description
 FROM product;
 
@@ -126,6 +126,36 @@ HINT: There are a possibly a few ways to do this query, but if you're struggling
 with a UNION binding them. */
 
 
+WITH daily_sales AS (
+    SELECT 
+    market_date,
+    SUM(quantity * cost_to_customer_per_qty) AS total_sales
+    FROM customer_purchases
+    GROUP BY market_date
+),
+ranked_days AS (
+    SELECT
+    market_date,
+    total_sales,
+        RANK() OVER (ORDER BY total_sales DESC) AS best_rank,
+        RANK() OVER (ORDER BY total_sales ASC)  AS worst_rank
+    FROM daily_sales
+)
+SELECT 
+market_date,
+total_sales,
+    'highest_sale' AS rank
+FROM ranked_days
+WHERE best_rank = 1
+
+UNION
+
+SELECT 
+market_date,
+total_sales,
+    'lowes_sale' AS rank
+FROM ranked_days
+WHERE worst_rank = 1;
 
 
 /* SECTION 3 */
