@@ -218,10 +218,9 @@ INSERT INTO
     product_name,
     product_size,
     product_qty_type,
-    original_price,
     snapshot_timestamp
 )
-VALUES (24,'Apple Pie','1','unit',3.99,CURRENT_TIMESTAMP);
+VALUES (24,'Apple Pie','1','unit',CURRENT_TIMESTAMP);
 
 
 -- DELETE
@@ -229,9 +228,9 @@ VALUES (24,'Apple Pie','1','unit',3.99,CURRENT_TIMESTAMP);
 
 HINT: If you don't specify a WHERE clause, you are going to have a bad time.*/
 
-SELECT *
-FROM product_units
+DELETE FROM product_units
 WHERE product_name = 'Apple Pie';
+
 
 
 -- UPDATE
